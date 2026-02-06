@@ -12,6 +12,7 @@ This project implements the hybrid ABSA (Aspect-Based Sentiment Analysis) pipeli
 * `logs/`: Stores execution logs.
 * `results/`: Stores the output CSV files and the generated comparison plots.
 * `demo/`: Jupyter Notebooks and related analysis.
+* `docs/`: Contains analytical report, slides, and presentation video.
 
 ## Setup
 
