@@ -1,12 +1,10 @@
+import os
 import ast
 import logging
-import os
-from datetime import datetime
-
 import pandas as pd
-
+from datetime import datetime
+from models import InstructDeBERTa, BaselineModel
 from evaluate import evaluate_model
-from models import BaselineModel, InstructDeBERTa
 
 # --- Setup Directories ---
 os.makedirs("logs", exist_ok=True)
@@ -25,7 +23,6 @@ logger = logging.getLogger(__name__)
 def load_dataset(path):
     logger.info(f"Loading dataset from {path}...")
     df = pd.read_csv(path)
-    # Convert string representation "[('a','Pos'),...]" back to python objects
     dataset = []
     for _, row in df.iterrows():
         try:
@@ -59,50 +56,62 @@ def main():
     logger.info("Initializing Baseline (DistilBERT)...")
     model_base = BaselineModel()
 
+    # List to store all detailed rows for final CSV
+    all_detailed_records = []
+
     # 3. Evaluation
     logger.info("Evaluating Proposed Model (Beam=1)...")
-    res_v1 = evaluate_model(model_v1, data)
-    logger.info(f"Results V1: {res_v1}")
+    metrics_v1, details_v1 = evaluate_model(
+        model_v1, data, model_name="Instruct-DeBERTa (B=1)"
+    )
+    logger.info(f"Results V1: {metrics_v1}")
+    all_detailed_records.extend(details_v1)
 
     logger.info("Evaluating Proposed Model (Beam=3)...")
-    res_v2 = evaluate_model(model_v2, data)
-    logger.info(f"Results V2: {res_v2}")
+    metrics_v2, details_v2 = evaluate_model(
+        model_v2, data, model_name="Instruct-DeBERTa (B=3)"
+    )
+    logger.info(f"Results V2: {metrics_v2}")
+    all_detailed_records.extend(details_v2)
 
     logger.info("Evaluating Baseline...")
-    res_base = evaluate_model(model_base, data)
-    logger.info(f"Results Baseline: {res_base}")
+    metrics_base, details_base = evaluate_model(model_base, data, model_name="Baseline")
+    logger.info(f"Results Baseline: {metrics_base}")
+    all_detailed_records.extend(details_base)
 
-    # 4. Save Results
-    results_data = {
+    # 4. Save Aggregate Results (Summary Table)
+    summary_data = {
         "Model": [
             "Baseline (Sentence-Level)",
             "Instruct-DeBERTa (Beam=1)",
             "Instruct-DeBERTa (Beam=3)",
         ],
-        "ATE_F1": ["N/A", res_v1["ATE_F1"], res_v2["ATE_F1"]],
+        "ATE_F1": ["N/A", metrics_v1["ATE_F1"], metrics_v2["ATE_F1"]],
         "ASC_Accuracy": [
-            res_base["ASC_Accuracy"],
-            res_v1["ASC_Accuracy"],
-            res_v2["ASC_Accuracy"],
+            metrics_base["ASC_Accuracy"],
+            metrics_v1["ASC_Accuracy"],
+            metrics_v2["ASC_Accuracy"],
         ],
-        "ASC_F1": [res_base["ASC_F1"], res_v1["ASC_F1"], res_v2["ASC_F1"]],
+        "ASC_F1": [metrics_base["ASC_F1"], metrics_v1["ASC_F1"], metrics_v2["ASC_F1"]],
     }
 
-    df_results = pd.DataFrame(results_data)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_path = f"results/experiment_results_{timestamp}.csv"
 
-    df_results.to_csv(output_path, index=False)
-    logger.info(f"Experiment finished. Results saved to {output_path}")
+    # Save Summary
+    df_summary = pd.DataFrame(summary_data)
+    summary_path = f"results/summary_metrics_{timestamp}.csv"
+    df_summary.to_csv(summary_path, index=False)
+
+    # Save Detailed Predictions
+    df_details = pd.DataFrame(all_detailed_records)
+    details_path = f"results/detailed_predictions_{timestamp}.csv"
+    df_details.to_csv(details_path, index=False)
+
+    logger.info(f"Summary metrics saved to {summary_path}")
+    logger.info(f"Detailed predictions saved to {details_path}")
 
     print("\n--- FINAL RESULTS TABLE ---")
-    print(df_results.to_string(index=False))
-
-    # 5. Demo Output
-    print("\n--- DEMO PREDICTION ---")
-    demo_text = "The navigation is confusing but the build quality is solid."
-    print(f"Input: {demo_text}")
-    print(f"Output: {model_v1.predict(demo_text)}")
+    print(df_summary.to_string(index=False))
 
 
 if __name__ == "__main__":
