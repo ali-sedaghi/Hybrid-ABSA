@@ -1,0 +1,4 @@
+Model,ATE_F1,ASC_Accuracy,ASC_F1
+Baseline (Sentence-Level),N/A,0.8125,0.8118
+Instruct-DeBERTa (Beam=1),0.2581,0.75,0.7667
+Instruct-DeBERTa (Beam=3),0.0741,1.0,1.0

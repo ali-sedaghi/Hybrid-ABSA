@@ -1,0 +1,34 @@
+Model,Input Text,Ground Truth,Predicted Raw,Extracted Aspects,Predicted Sentiments
+Instruct-DeBERTa (B=1),The food was excellent but the service was incredibly slow.,"[('food', 'Positive'), ('service', 'Negative')]","[('Food was excellent but the service was incredibly slow.', 'Positive')]",['food was excellent but the service was incredibly slow.'],['Positive']
+Instruct-DeBERTa (B=1),"I love the ambiance, but the prices are too high.","[('ambiance', 'Positive'), ('prices', 'Negative')]","[('ambiance', 'Positive'), ('prices', 'Negative'), ('and ambiance are too high.', 'Negative')]","['ambiance', 'prices', 'and ambiance are too high.']","['Positive', 'Negative', 'Negative']"
+Instruct-DeBERTa (B=1),The pizza is delicious.,"[('pizza', 'Positive')]","[('The pizza is delicious', 'Positive')]",['the pizza is delicious'],['Positive']
+Instruct-DeBERTa (B=1),"We waited for an hour, the table was dirty.","[('table', 'Negative')]","[('We waited for an hour', 'Negative'), ('the table was dirty', 'Positive')]","['we waited for an hour', 'the table was dirty']","['Negative', 'Positive']"
+Instruct-DeBERTa (B=1),Great staff and amazing wine list.,"[('staff', 'Positive'), ('wine list', 'Positive')]","[('staff', 'Positive'), ('wine list', 'Negative'), ('and staff', 'Positive')]","['staff', 'wine list', 'and staff']","['Positive', 'Negative', 'Positive']"
+Instruct-DeBERTa (B=1),The owner is rude.,"[('owner', 'Negative')]","[('The owner is rude', 'Neutral')]",['the owner is rude'],['Neutral']
+Instruct-DeBERTa (B=1),Reasonable prices for such good quality.,"[('prices', 'Positive'), ('quality', 'Positive')]","[('Prices for such good quality', 'Negative')]",['prices for such good quality'],['Negative']
+Instruct-DeBERTa (B=1),The decor is outdated.,"[('decor', 'Negative')]","[('The decor is outdated', 'Positive')]",['the decor is outdated'],['Positive']
+Instruct-DeBERTa (B=1),I will never go back to this place.,[],[],[],[]
+Instruct-DeBERTa (B=1),The lasagna was cold and the cheese was rubbery.,"[('lasagna', 'Negative'), ('cheese', 'Negative')]","[('lasagna was cold and the cheese was rubbery', 'Positive')]",['lasagna was cold and the cheese was rubbery'],['Positive']
+Instruct-DeBERTa (B=1),The navigation is confusing but the build quality is solid.,"[('navigation', 'Negative'), ('build quality', 'Positive')]","[('The navigation is confusing but the build quality is solid', 'Neutral')]",['the navigation is confusing but the build quality is solid'],['Neutral']
+Instruct-DeBERTa (B=3),The food was excellent but the service was incredibly slow.,"[('food', 'Positive'), ('service', 'Negative')]","[('Food was excellent but the service was incredibly slow.', 'Positive')]",['food was excellent but the service was incredibly slow.'],['Positive']
+Instruct-DeBERTa (B=3),"I love the ambiance, but the prices are too high.","[('ambiance', 'Positive'), ('prices', 'Negative')]","[('ambiance', 'Positive'), ('prices are too high.', 'Negative')]","['ambiance', 'prices are too high.']","['Positive', 'Negative']"
+Instruct-DeBERTa (B=3),The pizza is delicious.,"[('pizza', 'Positive')]","[('Pizza is delicious.', 'Positive')]",['pizza is delicious.'],['Positive']
+Instruct-DeBERTa (B=3),"We waited for an hour, the table was dirty.","[('table', 'Negative')]","[('We waited for an hour', 'Negative'), ('the table was dirty.', 'Positive')]","['we waited for an hour', 'the table was dirty.']","['Negative', 'Positive']"
+Instruct-DeBERTa (B=3),Great staff and amazing wine list.,"[('staff', 'Positive'), ('wine list', 'Positive')]","[('staff and wine list', 'Positive')]",['staff and wine list'],['Positive']
+Instruct-DeBERTa (B=3),The owner is rude.,"[('owner', 'Negative')]","[('owner is rude.', 'Neutral')]",['owner is rude.'],['Neutral']
+Instruct-DeBERTa (B=3),Reasonable prices for such good quality.,"[('prices', 'Positive'), ('quality', 'Positive')]","[('Prices for such good quality.', 'Negative')]",['prices for such good quality.'],['Negative']
+Instruct-DeBERTa (B=3),The decor is outdated.,"[('decor', 'Negative')]",[],[],[]
+Instruct-DeBERTa (B=3),I will never go back to this place.,[],[],[],[]
+Instruct-DeBERTa (B=3),The lasagna was cold and the cheese was rubbery.,"[('lasagna', 'Negative'), ('cheese', 'Negative')]","[('lasagna was cold and the cheese was rubbery.', 'Positive')]",['lasagna was cold and the cheese was rubbery.'],['Positive']
+Instruct-DeBERTa (B=3),The navigation is confusing but the build quality is solid.,"[('navigation', 'Negative'), ('build quality', 'Positive')]","[('Navigation is confusing but the build quality is solid', 'Neutral')]",['navigation is confusing but the build quality is solid'],['Neutral']
+Baseline,The food was excellent but the service was incredibly slow.,"[('food', 'Positive'), ('service', 'Negative')]",Negative,"['food', 'service']","['Negative', 'Negative']"
+Baseline,"I love the ambiance, but the prices are too high.","[('ambiance', 'Positive'), ('prices', 'Negative')]",Negative,"['ambiance', 'prices']","['Negative', 'Negative']"
+Baseline,The pizza is delicious.,"[('pizza', 'Positive')]",Positive,['pizza'],['Positive']
+Baseline,"We waited for an hour, the table was dirty.","[('table', 'Negative')]",Negative,['table'],['Negative']
+Baseline,Great staff and amazing wine list.,"[('staff', 'Positive'), ('wine list', 'Positive')]",Positive,"['staff', 'wine list']","['Positive', 'Positive']"
+Baseline,The owner is rude.,"[('owner', 'Negative')]",Negative,['owner'],['Negative']
+Baseline,Reasonable prices for such good quality.,"[('prices', 'Positive'), ('quality', 'Positive')]",Positive,"['prices', 'quality']","['Positive', 'Positive']"
+Baseline,The decor is outdated.,"[('decor', 'Negative')]",Negative,['decor'],['Negative']
+Baseline,I will never go back to this place.,[],Positive,[],[]
+Baseline,The lasagna was cold and the cheese was rubbery.,"[('lasagna', 'Negative'), ('cheese', 'Negative')]",Negative,"['lasagna', 'cheese']","['Negative', 'Negative']"
+Baseline,The navigation is confusing but the build quality is solid.,"[('navigation', 'Negative'), ('build quality', 'Positive')]",Positive,"['navigation', 'build quality']","['Positive', 'Positive']"
