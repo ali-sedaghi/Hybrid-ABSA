@@ -1,12 +1,12 @@
 import torch
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
 
 class InstructDeBERTa:
     """
-    The Proposed Hybrid Model from the paper.
-    ATE Component: InstructABSA (Tk-Instruct base)
-    ASC Component: DeBERTa-V3-base-absa-v1
+    The Proposed Hybrid Model.
+    ATE: InstructABSA (Tk-Instruct)
+    ASC: DeBERTa-V3-ABSA
     """
 
     def __init__(self, device=None, beam_size=1):
@@ -18,14 +18,14 @@ class InstructDeBERTa:
             f"[Instruct-DeBERTa] Loading on {self.device} (Beam Size: {self.beam_size})..."
         )
 
-        # --- ATE Component (Aspect Term Extraction) ---
+        # --- ATE Component ---
         ate_model_id = "kevinscaria/ate_tk-instruct-base-def-pos-neg-neut-combined"
         self.ate_tokenizer = AutoTokenizer.from_pretrained(ate_model_id)
         self.ate_model = AutoModelForSeq2SeqLM.from_pretrained(ate_model_id).to(
             self.device
         )
 
-        # --- ASC Component (Aspect Sentiment Classification) ---
+        # --- ASC Component ---
         asc_model_id = "yangheng/deberta-v3-base-absa-v1.1"
         self.asc_pipeline = pipeline(
             "text-classification",
@@ -35,15 +35,25 @@ class InstructDeBERTa:
         )
 
     def extract_aspects(self, text):
+        # InstructABSA often expects a task definition.
+        # For debugging, we will print what we are sending in.
         input_ids = self.ate_tokenizer(text, return_tensors="pt").input_ids.to(
             self.device
         )
+
         with torch.no_grad():
             outputs = self.ate_model.generate(
                 input_ids, max_length=128, num_beams=self.beam_size
             )
         decoded = self.ate_tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # Parse output: "aspect1, aspect2" -> ["aspect1", "aspect2"]
+
+        # --- DEBUG PRINT ---
+        # This will tell us if the model is outputting an empty string or something else.
+        print(f"\n[DEBUG ATE] Input: '{text}'")
+        print(f"[DEBUG ATE] Raw Model Output: '{decoded}'")
+        # -------------------
+
+        # Parse: "aspect1, aspect2" -> ["aspect1", "aspect2"]
         aspects = [a.strip() for a in decoded.split(",") if a.strip()]
         return aspects
 
@@ -51,23 +61,21 @@ class InstructDeBERTa:
         extracted_aspects = self.extract_aspects(text)
         predictions = []
 
+        if not extracted_aspects:
+            print(f"[DEBUG ATE] No aspects extracted for: '{text}'")
+
         for aspect in extracted_aspects:
             try:
-                # DeBERTa ASC prediction
                 res = self.asc_pipeline(text, text_pair=aspect)
                 label = res[0]["label"]
                 predictions.append((aspect, label))
             except Exception as e:
+                print(f"[DEBUG ASC] Error classifying '{aspect}': {e}")
                 continue
         return predictions
 
 
 class BaselineModel:
-    """
-    Baseline: Standard Sentence-Level Sentiment Analysis.
-    Uses DistilBERT fine-tuned on SST-2.
-    """
-
     def __init__(self, device=None):
         self.device = (
             device if device else ("cuda" if torch.cuda.is_available() else "cpu")
