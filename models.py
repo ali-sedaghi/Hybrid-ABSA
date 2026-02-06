@@ -35,10 +35,14 @@ class InstructDeBERTa:
         )
 
     def extract_aspects(self, text):
-        # --- FIX: ADD INSTRUCTION PROMPT ---
-        # The model requires a definition to know it should perform extraction.
-        # Based on InstructABSA (Scaria et al.), the format is:
-        prompt = f"Definition: The task is to extract the aspect terms from the given sentence. Sentence: {text}"
+        # --- FIX: STRICT INSTRUCTION PROMPT ---
+        # Tk-Instruct models are sensitive to newlines and "Definition/Input/Output" markers.
+        # We explicitly tell it to use commas.
+        prompt = (
+            "Definition: Extract the aspect terms from the text. Return only the aspect terms separated by commas.\n"
+            f"Input: {text}\n"
+            "Output:"
+        )
 
         input_ids = self.ate_tokenizer(prompt, return_tensors="pt").input_ids.to(
             self.device
@@ -50,15 +54,18 @@ class InstructDeBERTa:
             )
         decoded = self.ate_tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-        # --- DEBUG PRINT ---
-        # print(f"\n[DEBUG ATE] Input: '{prompt}'")
-        # print(f"[DEBUG ATE] Raw Model Output: '{decoded}'")
-        # -------------------
+        # --- DEBUG PRINT (Uncomment if issues persist) ---
+        # print(f"\n[DEBUG] Raw Output: '{decoded}'")
 
-        # Parse: "aspect1, aspect2" -> ["aspect1", "aspect2"]
-        # The model might output "food, service" or "[food, service]" depending on specific tuning
-        cleaned_output = decoded.replace("[", "").replace("]", "")
-        aspects = [a.strip() for a in cleaned_output.split(",") if a.strip()]
+        # Cleaning: Remove "Aspect terms:" prefix if the model generates it
+        cleaned = decoded.replace("Aspect terms:", "").replace("Output:", "").strip()
+
+        # Parse comma-separated list
+        aspects = [a.strip() for a in cleaned.split(",") if a.strip()]
+
+        # Safety check: If extracted text is identical to input (copying), discard it
+        if len(aspects) == 1 and aspects[0].lower() == text.lower():
+            return []
 
         return aspects
 
@@ -66,16 +73,13 @@ class InstructDeBERTa:
         extracted_aspects = self.extract_aspects(text)
         predictions = []
 
-        if not extracted_aspects:
-            print(f"[DEBUG ATE] No aspects extracted for: '{text}'")
-
         for aspect in extracted_aspects:
             try:
+                # DeBERTa ASC prediction
                 res = self.asc_pipeline(text, text_pair=aspect)
                 label = res[0]["label"]
                 predictions.append((aspect, label))
             except Exception as e:
-                print(f"[DEBUG ASC] Error classifying '{aspect}': {e}")
                 continue
         return predictions
 

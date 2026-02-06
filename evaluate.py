@@ -3,7 +3,7 @@ from sklearn.metrics import f1_score, accuracy_score
 
 def evaluate_model(model, dataset, logger=None):
     """
-    Evaluates the model on the dataset with DEBUG prints.
+    Evaluates the model on the dataset.
     """
     tp_ate, fp_ate, fn_ate = 0, 0, 0
     y_true_sent = []
@@ -11,15 +11,11 @@ def evaluate_model(model, dataset, logger=None):
 
     is_baseline = hasattr(model, "predict_sentiment")
 
-    print(
-        f"\n--- Starting Evaluation (Model: {'Baseline' if is_baseline else 'Instruct-DeBERTa'}) ---"
-    )
-
     for i, entry in enumerate(dataset):
         text = entry["text"]
         gt_pairs = entry["ground_truth"]
 
-        # Normalize Ground Truth
+        # Normalize Ground Truth: lowercase and strip
         gt_aspects_list = [p[0].lower().strip() for p in gt_pairs]
 
         if is_baseline:
@@ -30,21 +26,10 @@ def evaluate_model(model, dataset, logger=None):
 
         # --- Evaluate ATE ---
         if not is_baseline:
-            # Normalize Predictions
             pred_aspects_list = [p[0].lower().strip() for p in preds]
 
             gt_set = set(gt_aspects_list)
             pred_set = set(pred_aspects_list)
-
-            # --- DEBUG COMPARISON ---
-            # Print only first 5 examples or if there is a mismatch to avoid flooding logs
-            if i < 5 or len(gt_set & pred_set) == 0:
-                print(f"\n[DEBUG EVAL] Example {i + 1}:")
-                print(f"  GT Aspects  : {gt_set}")
-                print(f"  Pred Aspects: {pred_set}")
-                if len(gt_set & pred_set) == 0 and len(gt_set) > 0:
-                    print("  -> FAILURE: No overlap!")
-            # ------------------------
 
             tp_ate += len(gt_set & pred_set)
             fp_ate += len(pred_set - gt_set)
