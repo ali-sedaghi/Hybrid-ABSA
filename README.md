@@ -11,7 +11,7 @@ This project implements the hybrid ABSA (Aspect-Based Sentiment Analysis) pipeli
 * `visualize.py`: Generates bar charts comparing the model performances.
 * `logs/`: Stores execution logs.
 * `results/`: Stores the output CSV files and the generated comparison plots.
-* `demo/`: Jupyter Notebook and related analysis.
+* `demo/`: Jupyter Notebooks and related analysis.
 
 ## Setup
 
@@ -45,7 +45,7 @@ This project implements the hybrid ABSA (Aspect-Based Sentiment Analysis) pipeli
 
 ## Demo
 
-A Jupyter Notebook is provided for interactive analysis and visualization using a new dataset (Laptop domain).
+A Jupyter Notebook is provided for interactive analysis and visualization using a new dataset (Google Colab).
 
 1. Navigate to the demo folder:
 
