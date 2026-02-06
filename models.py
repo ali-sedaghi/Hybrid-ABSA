@@ -59,7 +59,6 @@ class InstructDeBERTa:
                 predictions.append((aspect, label))
             except Exception as e:
                 continue
-        print(predictions)
         return predictions
 
 
