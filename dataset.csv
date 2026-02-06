@@ -1,0 +1,12 @@
+text,ground_truth
+"The food was excellent but the service was incredibly slow.","[('food', 'Positive'), ('service', 'Negative')]"
+"I love the ambiance, but the prices are too high.","[('ambiance', 'Positive'), ('prices', 'Negative')]"
+"The pizza is delicious.","[('pizza', 'Positive')]"
+"We waited for an hour, the table was dirty.","[('table', 'Negative')]"
+"Great staff and amazing wine list.","[('staff', 'Positive'), ('wine list', 'Positive')]"
+"The owner is rude.","[('owner', 'Negative')]"
+"Reasonable prices for such good quality.","[('prices', 'Positive'), ('quality', 'Positive')]"
+"The decor is outdated.","[('decor', 'Negative')]"
+"I will never go back to this place.","[]"
+"The lasagna was cold and the cheese was rubbery.","[('lasagna', 'Negative'), ('cheese', 'Negative')]"
+"The navigation is confusing but the build quality is solid.","[('navigation', 'Negative'), ('build quality', 'Positive')]"
