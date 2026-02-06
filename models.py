@@ -35,9 +35,12 @@ class InstructDeBERTa:
         )
 
     def extract_aspects(self, text):
-        # InstructABSA often expects a task definition.
-        # For debugging, we will print what we are sending in.
-        input_ids = self.ate_tokenizer(text, return_tensors="pt").input_ids.to(
+        # --- FIX: ADD INSTRUCTION PROMPT ---
+        # The model requires a definition to know it should perform extraction.
+        # Based on InstructABSA (Scaria et al.), the format is:
+        prompt = f"Definition: The task is to extract the aspect terms from the given sentence. Sentence: {text}"
+
+        input_ids = self.ate_tokenizer(prompt, return_tensors="pt").input_ids.to(
             self.device
         )
 
@@ -48,13 +51,15 @@ class InstructDeBERTa:
         decoded = self.ate_tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         # --- DEBUG PRINT ---
-        # This will tell us if the model is outputting an empty string or something else.
-        print(f"\n[DEBUG ATE] Input: '{text}'")
-        print(f"[DEBUG ATE] Raw Model Output: '{decoded}'")
+        # print(f"\n[DEBUG ATE] Input: '{prompt}'")
+        # print(f"[DEBUG ATE] Raw Model Output: '{decoded}'")
         # -------------------
 
         # Parse: "aspect1, aspect2" -> ["aspect1", "aspect2"]
-        aspects = [a.strip() for a in decoded.split(",") if a.strip()]
+        # The model might output "food, service" or "[food, service]" depending on specific tuning
+        cleaned_output = decoded.replace("[", "").replace("]", "")
+        aspects = [a.strip() for a in cleaned_output.split(",") if a.strip()]
+
         return aspects
 
     def predict(self, text):
